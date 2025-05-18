@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"context"
 	"fmt"
 	"gin_example/src/model"
 )
@@ -10,16 +11,13 @@ type UserRepo struct {
 }
 
 // Hàm mở rộng riêng
-func (r *UserRepo) FindByName(name string) ([]model.User, error) {
+func (r *UserRepo) FindByName(ctx context.Context, name string) ([]model.User, error) {
 	fmt.Println("FindByName:", name)
 	return []model.User{}, nil
 }
 
 // Interface nếu cần đa hình
-type UserRepository interface {
-	Create(model.User) error
-	GetByID(string) (model.User, error)
-	Update(model.User) error
-	Delete(int) error
-	FindByName(string) ([]model.User, error)
+type IUser interface {
+	IRepository[model.User]
+	FindByName(ctx context.Context, name string) ([]model.User, error)
 }

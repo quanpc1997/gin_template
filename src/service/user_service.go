@@ -2,34 +2,44 @@ package service
 
 import (
 	"gin_example/src/model"
+	"gin_example/src/schema"
 	"gin_example/src/service/repo"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 type UserService struct {
-	Repo repo.UserRepo
+	Repo repo.IUser
 }
 
 func (s *UserService) Create(c *gin.Context) {
-	var user model.User
-	if err := c.ShouldBindJSON(&user); err != nil {
+	var req schema.UserCreateRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	err := s.Repo.Create(user)
+	user_model_data := model.User{
+		FirstName: req.Firstname,
+		LastName:  req.Lastname,
+		Email:     req.Email,
+		Password:  req.Password, // Bạn nên hash password!
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+	err := s.Repo.Create(c.Request.Context(), &user_model_data)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusCreated, user_model_data)
 }
 
 func (s *UserService) GetByID(c *gin.Context) {
 	id := c.Param("id")
-	user, err := s.Repo.GetByID(id)
+	user, err := s.Repo.GetByID(c.Request.Context(), id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -43,7 +53,7 @@ func (s *UserService) Update(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	err := s.Repo.Update(user)
+	err := s.Repo.Update(c.Request.Context(), &user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -57,7 +67,7 @@ func (s *UserService) Delete(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
-	err = s.Repo.Delete(id)
+	err = s.Repo.Delete(c.Request.Context(), id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -67,7 +77,7 @@ func (s *UserService) Delete(c *gin.Context) {
 
 func (s *UserService) FindByName(c *gin.Context) {
 	name := c.Param("name")
-	users, err := s.Repo.FindByName(name)
+	users, err := s.Repo.FindByName(c.Request.Context(), name)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

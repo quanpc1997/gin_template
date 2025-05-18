@@ -22,3 +22,13 @@ Chạy migrate:
 ```sh
 migrate -path db/migrations -database "postgresql://root:123456@localhost:5432/example?sslmode=disable" up
 ```
+
+Rollback migrate:
+```sh
+migrate -path db/migrations -database "postgresql://root:123456@localhost:5432/example?sslmode=disable" down
+```
+
+Rollback to specific version:
+```sh
+migrate -path db/migrations -database "postgresql://root:123456@localhost:5432/example?sslmode=disable" down -to 0
+```

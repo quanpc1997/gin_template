@@ -1,6 +1,7 @@
 package src
 
 import (
+	"gin_example/configure"
 	"gin_example/src/model"
 	"gin_example/src/service"
 	"gin_example/src/service/repo"
@@ -11,24 +12,39 @@ import (
 func MainRouter() *gin.Engine {
 	var router = gin.Default()
 
-	// Initialize repository and service
-	userRepo := &repo.UserRepo{
-		Repository: &repo.Repository[model.User]{},
-	}
-	userService := &service.UserService{
-		Repo: *userRepo,
+	db := configure.InitDB()
+
+	baseRepo := &repo.Repository[model.User]{
+		DB: db,
 	}
 
-	userRouter := router.Group("")
+	// Initialize repository and service
+	var userRepo repo.IUser = &repo.UserRepo{
+		Repository: baseRepo,
+	}
+	userService := &service.UserService{
+		Repo: userRepo,
+	}
+
+	monitorRepo := &repo.MonitorRepo{}
+	monitorService := &service.MonitorService{
+		Repo: *monitorRepo,
+	}
+
+	mainRouter := router.Group("")
 	{
 		// Users routes
-		users := userRouter.Group("/user")
+		users := mainRouter.Group("/user")
 		{
 			users.POST("/", userService.Create)
 			users.GET("/:id", userService.GetByID)
 			users.GET("/find/:name", userService.FindByName)
 			users.PUT("/:id", userService.Update)
 			users.DELETE("/:id", userService.Delete)
+		}
+		monitor := mainRouter.Group("/monitor")
+		{
+			monitor.GET("/health", monitorService.HealthCheck)
 		}
 	}
 	return router

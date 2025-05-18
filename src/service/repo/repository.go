@@ -1,31 +1,35 @@
 package repo
 
 import (
-	"database/sql"
-	"fmt"
+	"context"
+	"gorm.io/gorm"
 )
 
 type Repository[T any] struct {
-	DB *sql.DB // hoặc GORM, hoặc gì đó
+	DB *gorm.DB
 }
 
-func (r *Repository[T]) Create(item T) error {
-	fmt.Println("Base Create")
-	return nil
+func (r *Repository[T]) Create(ctx context.Context, item *T) error {
+	return r.DB.WithContext(ctx).Create(item).Error
 }
 
-func (r *Repository[T]) GetByID(id string) (T, error) {
-	fmt.Println("Base GetByID")
+func (r *Repository[T]) GetByID(ctx context.Context, id any) (T, error) {
 	var result T
-	return result, nil
+	err := r.DB.WithContext(ctx).First(&result, "id = ?", id).Error
+	return result, err
 }
 
-func (r *Repository[T]) Update(item T) error {
-	fmt.Println("Base Update")
-	return nil
+func (r *Repository[T]) Update(ctx context.Context, item *T) error {
+	return r.DB.WithContext(ctx).Save(item).Error
 }
 
-func (r *Repository[T]) Delete(id int) error {
-	fmt.Println("Base Delete")
-	return nil
+func (r *Repository[T]) Delete(ctx context.Context, id any) error {
+	return r.DB.WithContext(ctx).Delete(new(T), "id = ?", id).Error
+}
+
+type IRepository[T any] interface {
+	Create(ctx context.Context, item *T) error
+	GetByID(ctx context.Context, id any) (T, error)
+	Update(ctx context.Context, item *T) error
+	Delete(ctx context.Context, id any) error
 }
