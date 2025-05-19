@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserService struct {
@@ -21,11 +22,17 @@ func (s *UserService) Create(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	hashedPassword, errHash := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	if errHash != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": errHash.Error()})
+		return
+	}
+
 	user_model_data := model.User{
 		FirstName: req.Firstname,
 		LastName:  req.Lastname,
 		Email:     req.Email,
-		Password:  req.Password, // Bạn nên hash password!
+		Password:  string(hashedPassword),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
