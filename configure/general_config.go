@@ -8,8 +8,10 @@ import (
 )
 
 type Configure struct {
-	S3Bucket  string
-	SecretKey string
+	KafkaBootstrapServer string
+	KafkaPort            string
+	KafkaTopic           string
+	KafkaGroup           string
 }
 
 func (c *Configure) InitConfigure() *Configure {
@@ -17,7 +19,9 @@ func (c *Configure) InitConfigure() *Configure {
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
-	c.S3Bucket = os.Getenv("S3_BUCKET")
-	c.SecretKey = os.Getenv("SECRET_KEY")
+	c.KafkaBootstrapServer = os.Getenv("KAFKA_BOOTSTRAP_SERVER")
+	c.KafkaPort = os.Getenv("KAFKA_PORT")
+	c.KafkaTopic = os.Getenv("KAFKA_TOPIC")
+	c.KafkaGroup = os.Getenv("KAFKA_GROUP")
 	return c
 }

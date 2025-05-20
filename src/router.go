@@ -14,8 +14,6 @@ func MainRouter() *gin.Engine {
 	var router = gin.Default()
 
 	db := configure.InitDB()
-	config := (&configure.Configure{}).InitConfigure()
-	logger := (&configure.LoggerConfigure{}).InitLogger()
 
 	baseRepo := &repo.Repository[model.User]{
 		DB: db,
@@ -51,6 +49,6 @@ func MainRouter() *gin.Engine {
 		}
 	}
 
-	logger.Info("====: ", zap.String("secretKey", config.SecretKey))
+	zap.L().Info("======== HAHA =========")
 	return router
 }

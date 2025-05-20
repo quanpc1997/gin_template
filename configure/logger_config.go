@@ -4,12 +4,11 @@ import (
 	"go.uber.org/zap"
 )
 
-type LoggerConfigure struct {
-}
+var logger *zap.Logger
 
-func (l *LoggerConfigure) InitLogger() *zap.Logger {
-	logger, _ := zap.NewProduction()
+func InitLogger() *zap.Logger {
+	logger, _ = zap.NewProduction()
 	defer logger.Sync()
-
+	zap.ReplaceGlobals(logger)
 	return logger
 }
