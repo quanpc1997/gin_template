@@ -7,12 +7,15 @@ import (
 	"gin_example/src/service/repo"
 
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 func MainRouter() *gin.Engine {
 	var router = gin.Default()
 
 	db := configure.InitDB()
+	config := (&configure.Configure{}).InitConfigure()
+	logger := (&configure.LoggerConfigure{}).InitLogger()
 
 	baseRepo := &repo.Repository[model.User]{
 		DB: db,
@@ -47,5 +50,7 @@ func MainRouter() *gin.Engine {
 			monitor.GET("/health", monitorService.HealthCheck)
 		}
 	}
+
+	logger.Info("====: ", zap.String("secretKey", config.SecretKey))
 	return router
 }

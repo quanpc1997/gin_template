@@ -9,5 +9,5 @@ func main() {
 	var router = src.MainRouter()
 
 	// Run the server
-	router.Run(":8080")
+	router.Run(":9000")
 }

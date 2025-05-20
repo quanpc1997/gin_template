@@ -20,15 +20,15 @@ migrate create -ext sql -dir db/migrations -seq ten_file_migrate
 
 Chạy migrate:
 ```sh
-migrate -path db/migrations -database "postgresql://root:123456@localhost:5432/example?sslmode=disable" up
+migrate -path db/migrations -database "postgresql://postgres:postgres@localhost:5432/ecommerce?sslmode=disable" up
 ```
 
 Rollback migrate:
 ```sh
-migrate -path db/migrations -database "postgresql://root:123456@localhost:5432/example?sslmode=disable" down
+migrate -path db/migrations -database "postgresql://postgres:postgres@localhost:5432/ecommerce?sslmode=disable" down
 ```
 
 Rollback to specific version:
 ```sh
-migrate -path db/migrations -database "postgresql://root:123456@localhost:5432/example?sslmode=disable" down -to 0
+migrate -path db/migrations -database "postgresql://postgres:postgres@localhost:5432/ecommerce?sslmode=disable" down -to 0
 ```
